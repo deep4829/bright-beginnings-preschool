@@ -66,13 +66,13 @@ export default function HomePage() {
     const applicationForm = document.getElementById('applicationForm') as HTMLFormElement | null;
     const successMessage = document.getElementById('successMessage');
 
-    const onSubmit = (e: Event) => {
+    const onSubmit = async (e: Event) => {
       e.preventDefault();
       if (!applicationForm || !successMessage) return;
 
       const formData = new FormData(applicationForm);
       let isValid = true;
-      const requiredFields = ['childName', 'childAge', 'dateOfBirth', 'program', 'schedule', 'startDate', 'parentName', 'email', 'phone', 'address'];
+      const requiredFields = ['childName', 'child Age', 'dateOfBirth', 'program', 'schedule', 'startDate', 'parentName', 'email', 'phone', 'address'];
 
       requiredFields.forEach(field => {
         const input = document.getElementById(field) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
@@ -119,11 +119,69 @@ export default function HomePage() {
         return;
       }
 
-      console.log('Application Data:', Object.fromEntries(formData.entries()));
-      successMessage.classList.add('show');
-      applicationForm.reset();
-      successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(() => successMessage.classList.remove('show'), 5000);
+      // Prepare data for API
+      const applicationData = {
+        childName: (document.getElementById('childName') as HTMLInputElement).value,
+        childAge: (document.getElementById('childAge') as HTMLInputElement).value,
+        dateOfBirth: (document.getElementById('dateOfBirth') as HTMLInputElement).value,
+        program: (document.getElementById('program') as HTMLSelectElement).value,
+        schedule: (document.getElementById('schedule') as HTMLSelectElement).value,
+        startDate: (document.getElementById('startDate') as HTMLInputElement).value,
+        parentName: (document.getElementById('parentName') as HTMLInputElement).value,
+        email: (document.getElementById('email') as HTMLInputElement).value,
+        phone: (document.getElementById('phone') as HTMLInputElement).value,
+        address: (document.getElementById('address') as HTMLInputElement).value,
+        additionalInfo: (document.getElementById('additionalInfo') as HTMLTextAreaElement).value
+      };
+
+      try {
+        // Show loading state (optional)
+        const submitButton = applicationForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+        const originalText = submitButton?.textContent;
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Submitting...';
+        }
+
+        // Call API route
+        const response = await fetch('/api/applications', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(applicationData),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // Success
+          successMessage.textContent = '✓ Application submitted successfully! We\'ll contact you within 24 hours.';
+          successMessage.classList.add('show');
+          applicationForm.reset();
+          successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => successMessage.classList.remove('show'), 5000);
+        } else {
+          // Error from API
+          alert(result.error || 'Failed to submit application. Please try again.');
+        }
+
+        // Restore button state
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = originalText || 'Submit Application';
+        }
+      } catch (error) {
+        console.error('Submission error:', error);
+        alert('Network error. Please check your connection and try again.');
+
+        // Restore button state
+        const submitButton = applicationForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Submit Application';
+        }
+      }
     };
 
     if (applicationForm) {
