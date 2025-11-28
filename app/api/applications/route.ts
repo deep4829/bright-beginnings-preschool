@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import nodemailer from 'nodemailer';
+import { generateEmailHtml } from '@/lib/email-template';
 
 export async function POST(request: NextRequest) {
     try {
@@ -83,6 +85,50 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Send acknowledgment email using Nodemailer
+        try {
+            const programNames: { [key: string]: string } = {
+                toddler: 'Toddler Program (Ages 2-3)',
+                preschool: 'Preschool Program (Ages 3-4)',
+                prekindergarten: 'Pre-Kindergarten (Ages 4-5)'
+            };
+
+            // Create transporter
+            const transporter = nodemailer.createTransport({
+                host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+                port: parseInt(process.env.EMAIL_PORT || '587'),
+                secure: false, // true for 465, false for other ports
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS,
+                },
+            });
+
+            // Generate HTML string directly
+            const emailHtml = generateEmailHtml({
+                parentName: body.parentName,
+                childName: body.childName,
+                program: programNames[body.program] || body.program,
+                startDate: new Date(body.startDate).toLocaleDateString('en-IN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })
+            });
+
+            // Send email
+            const info = await transporter.sendMail({
+                from: `"Bright Beginnings Preschool" <${process.env.EMAIL_USER}>`,
+                to: body.email,
+                subject: 'Application Received - Bright Beginnings Preschool',
+                html: emailHtml,
+            });
+
+            console.log('Nodemailer email sent:', info.messageId);
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+        }
+
         return NextResponse.json(
             {
                 success: true,
@@ -91,10 +137,10 @@ export async function POST(request: NextRequest) {
             },
             { status: 201 }
         );
-    } catch (error) {
+    } catch (error: any) {
         console.error('Server error:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            { error: 'Internal server error', details: error.message },
             { status: 500 }
         );
     }

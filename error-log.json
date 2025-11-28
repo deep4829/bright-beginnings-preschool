@@ -1,9 +1,4 @@
 {
-  "error": "Failed to save application",
-  "details": {
-    "code": "42501",
-    "details": null,
-    "hint": null,
-    "message": "new row violates row-level security policy for table \"applications\""
-  }
+  "error": "Internal server error",
+  "details": "data is not defined"
 }

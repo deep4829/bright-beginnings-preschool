@@ -7,7 +7,7 @@ const testData = {
     schedule: "full",
     startDate: "2025-02-01",
     parentName: "Sarah Thompson",
-    email: "sarah.thompson@email.com",
+    email: "deepshekhar429@gmail.com",
     phone: "9876543210",
     address: "456 Elm Street, Springfield",
     additionalInfo: "Looking forward to joining Bright Beginnings!"
