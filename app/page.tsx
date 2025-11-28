@@ -391,25 +391,25 @@ export default function HomePage() {
             <div className="gallery-item">
               <Image src="/images/hero-classroom.png" alt="Modern classroom" width={400} height={300} />
               <div className="gallery-overlay">
-                <h4>Bright Learning Spaces</h4>
+                <h4 style={{color: 'white'}}>Bright Learning Spaces</h4>
               </div>
             </div>
             <div className="gallery-item">
               <Image src="/images/art-activities.png" alt="Art activities" width={400} height={300} />
               <div className="gallery-overlay">
-                <h4>Creative Art Center</h4>
+                <h4 style={{color: 'white'}}>Creative Art Center</h4>
               </div>
             </div>
             <div className="gallery-item">
               <Image src="/images/outdoor-playground.png" alt="Outdoor playground" width={400} height={300} />
               <div className="gallery-overlay">
-                <h4>Safe Outdoor Play Area</h4>
+                <h4 style={{color: 'white'}}>Safe Outdoor Play Area</h4>
               </div>
             </div>
             <div className="gallery-item">
               <Image src="/images/reading-corner.png" alt="Reading corner" width={400} height={300} />
               <div className="gallery-overlay">
-                <h4>Cozy Reading Nook</h4>
+                <h4 style={{color: 'white'}}>Cozy Reading Nook</h4>
               </div>
             </div>
           </div>
